@@ -25,7 +25,8 @@ async function run() {
     // get all parts items api
     app.get("/get-parts", async (req, res) => {
       const parts = await partsCollection.find({}).toArray();
-      res.send(parts);
+      const updatedParts = parts.reverse();
+      res.send(updatedParts);
     });
 
     // get single items api
@@ -36,6 +37,24 @@ async function run() {
       res.send(result);
     });
 
+    // update quantity api
+    app.put("/get-parts/:id", async (req, res) => {
+      const { id } = req.params;
+      const data = req.body;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          availQuantity: data.availQuantity,
+        },
+      };
+      const result = await partsCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
     console.log("db connected");
   } finally {
     // await client.close();
