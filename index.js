@@ -21,12 +21,12 @@ async function run() {
     await client.connect();
 
     const partsCollection = client.db("PrimeSystems").collection("parts");
+    const purchaseCollection = client.db("PrimeSystems").collection("puchase");
 
     // get all parts items api
     app.get("/get-parts", async (req, res) => {
       const parts = await partsCollection.find({}).toArray();
-      const updatedParts = parts.reverse();
-      res.send(updatedParts);
+      res.send(parts);
     });
 
     // get single items api
@@ -55,6 +55,14 @@ async function run() {
       );
       res.send(result);
     });
+
+    // order parts api
+    app.post("/add-parts", async (req, res) => {
+      const data = req.body;
+      const result = await purchaseCollection.insertOne(data);
+      res.send(result);
+    });
+
     console.log("db connected");
   } finally {
     // await client.close();
