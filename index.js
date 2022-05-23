@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -72,6 +72,14 @@ async function run() {
       res.send(orders);
     });
 
+    // get specific purchase by id
+    app.get("/get-purchase/:id", async (req, res) => {
+      const { id } = req.params;
+      const query = { _id: ObjectId(id) };
+      const result = await purchaseCollection.findOne(query);
+      res.send(result);
+    });
+
     // user info api
     app.put("/user/:email", async (req, res) => {
       const { email } = req.params;
@@ -107,6 +115,25 @@ async function run() {
       res.send(users);
     });
 
+    // admin or not Api
+    app.get("/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = await usersCollection.findOne({ email: email });
+      const isAdmin = user?.role === "admin";
+      res.send({ admin: isAdmin });
+    });
+
+    // api for stripe payment
+    app.post("/create-payment-intent", async (req, res) => {
+      const { totalPrice } = req.body;
+      const amount = totalPrice * 100;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "usd",
+        payment_method_types: ["card"],
+      });
+      res.send({ clientSecret: paymentIntent.client_secret });
+    });
     console.log("db connected");
   } finally {
     // await client.close();
