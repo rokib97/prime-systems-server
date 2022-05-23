@@ -88,6 +88,25 @@ async function run() {
       );
       res.send(result);
     });
+    // set admin role
+    app.put("/user/admin/:email", async (req, res) => {
+      const { email } = req.params;
+      const filter = { email: email };
+      const updateDoc = {
+        $set: {
+          role: "admin",
+        },
+      };
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    // get all users in dashboard
+    app.get("/user", async (req, res) => {
+      const users = await usersCollection.find().toArray();
+      res.send(users);
+    });
+
     console.log("db connected");
   } finally {
     // await client.close();
