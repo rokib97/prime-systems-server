@@ -23,6 +23,7 @@ async function run() {
     const partsCollection = client.db("PrimeSystems").collection("parts");
     const purchaseCollection = client.db("PrimeSystems").collection("purchase");
     const usersCollection = client.db("PrimeSystems").collection("user");
+    const paymentCollection = client.db("PrimeSystems").collection("payments");
 
     // get all parts items api
     app.get("/get-parts", async (req, res) => {
@@ -78,6 +79,25 @@ async function run() {
       const query = { _id: ObjectId(id) };
       const result = await purchaseCollection.findOne(query);
       res.send(result);
+    });
+
+    // update purchse api
+    app.patch("/update-purchase/:id", async (req, res) => {
+      const id = req.params.id;
+      const payment = req.body;
+      const filter = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          paid: true,
+          transactionId: payment.transactionId,
+        },
+      };
+      const result = await paymentCollection.insertOne(payment);
+      const updatedOrder = await purchaseCollection.updateOne(
+        filter,
+        updateDoc
+      );
+      res.send(updatedOrder);
     });
 
     // user info api
