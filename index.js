@@ -21,7 +21,7 @@ async function run() {
     await client.connect();
 
     const partsCollection = client.db("PrimeSystems").collection("parts");
-    const purchaseCollection = client.db("PrimeSystems").collection("puchase");
+    const purchaseCollection = client.db("PrimeSystems").collection("purchase");
 
     // get all parts items api
     app.get("/get-parts", async (req, res) => {
@@ -61,6 +61,14 @@ async function run() {
       const data = req.body;
       const result = await purchaseCollection.insertOne(data);
       res.send(result);
+    });
+
+    // get purchase / order api
+    app.get("/get-purchase", async (req, res) => {
+      const { userEmail } = req.query;
+      const query = { userEmail: userEmail };
+      const orders = await purchaseCollection.find(query).toArray();
+      res.send(orders);
     });
 
     console.log("db connected");
