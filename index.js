@@ -22,6 +22,7 @@ async function run() {
 
     const partsCollection = client.db("PrimeSystems").collection("parts");
     const purchaseCollection = client.db("PrimeSystems").collection("purchase");
+    const usersCollection = client.db("PrimeSystems").collection("user");
 
     // get all parts items api
     app.get("/get-parts", async (req, res) => {
@@ -71,6 +72,22 @@ async function run() {
       res.send(orders);
     });
 
+    // user info api
+    app.put("/user/:email", async (req, res) => {
+      const { email } = req.params;
+      const user = req.body;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const result = await usersCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
     console.log("db connected");
   } finally {
     // await client.close();
