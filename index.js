@@ -42,8 +42,12 @@ async function run() {
     // get all parts items api
     app.get("/get-parts", async (req, res) => {
       const result = await partsCollection.find({}).toArray();
-      const parts = result.reverse();
-      res.send(parts);
+      res.send(result);
+    });
+
+    app.get("/get-adminparts", async (req, res) => {
+      const result = await partsCollection.find({}).toArray();
+      res.send(result);
     });
 
     // add a product
@@ -89,7 +93,7 @@ async function run() {
     });
 
     // order parts api
-    app.post("/add-parts", async (req, res) => {
+    app.post("/add-purchase", async (req, res) => {
       const data = req.body;
       const result = await purchaseCollection.insertOne(data);
       res.send(result);
@@ -154,6 +158,15 @@ async function run() {
       );
       res.send(result);
     });
+
+    //get user by email
+    app.get("/user/:email", async (req, res) => {
+      const { email } = req.params;
+      const filter = { email: email };
+      const result = await usersCollection.findOne(filter);
+      res.send(result);
+    });
+
     // set admin role
     app.put("/user/admin/:email", async (req, res) => {
       const { email } = req.params;
