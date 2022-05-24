@@ -40,7 +40,7 @@ async function run() {
     });
 
     // update quantity api
-    app.put("/get-parts/:id", async (req, res) => {
+    app.put("/update-parts/:id", async (req, res) => {
       const { id } = req.params;
       const data = req.body;
       const filter = { _id: ObjectId(id) };
@@ -98,6 +98,14 @@ async function run() {
         updateDoc
       );
       res.send(updatedOrder);
+    });
+
+    // delete single purchase api
+    app.delete("/delete-purchase/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await purchaseCollection.deleteOne(query);
+      res.send(result);
     });
 
     // user info api
