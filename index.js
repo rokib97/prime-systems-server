@@ -24,6 +24,13 @@ async function run() {
     const purchaseCollection = client.db("PrimeSystems").collection("purchase");
     const usersCollection = client.db("PrimeSystems").collection("user");
     const paymentCollection = client.db("PrimeSystems").collection("payments");
+    const reviewCollection = client.db("PrimeSystems").collection("review");
+
+    // get all review
+    app.get("/get-review", async (req, res) => {
+      const reviews = await reviewCollection.find({}).toArray();
+      res.send(reviews);
+    });
 
     // get all parts items api
     app.get("/get-parts", async (req, res) => {
