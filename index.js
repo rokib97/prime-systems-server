@@ -29,7 +29,8 @@ async function run() {
     // get all review
     app.get("/get-review", async (req, res) => {
       const reviews = await reviewCollection.find({}).toArray();
-      res.send(reviews);
+      const latestReview = reviews.reverse();
+      res.send(latestReview);
     });
     // post a review
     app.post("/add-review", async (req, res) => {
@@ -40,8 +41,16 @@ async function run() {
 
     // get all parts items api
     app.get("/get-parts", async (req, res) => {
-      const parts = await partsCollection.find({}).toArray();
+      const result = await partsCollection.find({}).toArray();
+      const parts = result.reverse();
       res.send(parts);
+    });
+
+    // add a product
+    app.post("/add-parts", async (req, res) => {
+      const data = req.body;
+      const result = await partsCollection.insertOne(data);
+      res.send(result);
     });
 
     // get single items api
@@ -68,6 +77,14 @@ async function run() {
         updateDoc,
         options
       );
+      res.send(result);
+    });
+
+    // delete single parts api
+    app.delete("/delete-parts/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await partsCollection.deleteOne(query);
       res.send(result);
     });
 
