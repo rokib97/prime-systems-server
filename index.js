@@ -42,7 +42,8 @@ async function run() {
     // get all parts items api
     app.get("/get-parts", async (req, res) => {
       const result = await partsCollection.find({}).toArray();
-      res.send(result);
+      const parts = result.reverse();
+      res.send(parts);
     });
 
     app.get("/get-adminparts", async (req, res) => {
@@ -158,6 +159,23 @@ async function run() {
       );
       res.send(result);
     });
+
+    // update user info api >>>>>>>>>>>>>> problem !!!!!!!!!!
+    // app.put("/user/:id", async (req, res) => {
+    //   const { id } = req.params;
+    //   const data = req.body;
+    //   const filter = { _id: ObjectId(id) };
+    //   const options = { upsert: true };
+    //   const updateDoc = {
+    //     $set: data,
+    //   };
+    //   const result = await usersCollection.updateOne(
+    //     filter,
+    //     updateDoc,
+    //     options
+    //   );
+    //   res.send(result);
+    // });
 
     //get user by email
     app.get("/user/:email", async (req, res) => {
