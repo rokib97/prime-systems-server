@@ -131,7 +131,7 @@ async function run() {
     });
 
     // get specific purchase by id
-    app.get("/get-purchase/:id", async (req, res) => {
+    app.get("/get-purchase/:id", verifyJWT, async (req, res) => {
       const { id } = req.params;
       const query = { _id: ObjectId(id) };
       const result = await purchaseCollection.findOne(query);
@@ -139,7 +139,7 @@ async function run() {
     });
 
     // update purchse api
-    app.patch("/update-purchase/:id", async (req, res) => {
+    app.patch("/update-purchase/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
       const payment = req.body;
       const filter = { _id: ObjectId(id) };
@@ -166,7 +166,7 @@ async function run() {
     });
 
     // user info api
-    app.put("/user/:email", async (req, res) => {
+    app.put("/user/:email", verifyJWT, async (req, res) => {
       const { email } = req.params;
       const user = req.body;
       const filter = { email: email };
@@ -206,7 +206,7 @@ async function run() {
     // });
 
     //get user by email
-    app.get("/user/:email", async (req, res) => {
+    app.get("/user/:email", verifyJWT, async (req, res) => {
       const { email } = req.params;
       const filter = { email: email };
       const result = await usersCollection.findOne(filter);
@@ -214,7 +214,7 @@ async function run() {
     });
 
     // set admin role
-    app.put("/user/admin/:email", async (req, res) => {
+    app.put("/user/admin/:email", verifyJWT, async (req, res) => {
       const { email } = req.params;
       const filter = { email: email };
       const updateDoc = {
@@ -227,7 +227,7 @@ async function run() {
     });
 
     // get all users in dashboard
-    app.get("/user", async (req, res) => {
+    app.get("/user", verifyJWT, async (req, res) => {
       const users = await usersCollection.find().toArray();
       res.send(users);
     });
@@ -241,7 +241,7 @@ async function run() {
     });
 
     // api for stripe payment
-    app.post("/create-payment-intent", async (req, res) => {
+    app.post("/create-payment-intent", verifyJWT, async (req, res) => {
       const { totalPrice } = req.body;
       const amount = totalPrice * 100;
       const paymentIntent = await stripe.paymentIntents.create({
