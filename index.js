@@ -110,7 +110,7 @@ async function run() {
       res.send(result);
     });
 
-    // order parts api
+    // order purchase api
     app.post("/add-purchase", async (req, res) => {
       const data = req.body;
       const result = await purchaseCollection.insertOne(data);
@@ -128,6 +128,13 @@ async function run() {
       } else {
         return res.status(403).send({ message: "Forbidden Access" });
       }
+    });
+
+    // get all order purchse for admin api
+    app.get("/get-allpurchase", async (req, res) => {
+      const result = await purchaseCollection.find({}).toArray();
+      console.log(result);
+      res.send(result);
     });
 
     // get specific purchase by id
@@ -157,6 +164,22 @@ async function run() {
       res.send(updatedOrder);
     });
 
+    // update pending status admin api
+    app.patch("/update-purchase-status/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          shipping: true,
+        },
+      };
+      const updatedOrder = await purchaseCollection.updateOne(
+        filter,
+        updateDoc
+      );
+      res.send(updatedOrder);
+    });
+
     // delete single purchase api
     app.delete("/delete-purchase/:id", async (req, res) => {
       const id = req.params.id;
@@ -166,7 +189,7 @@ async function run() {
     });
 
     // user info api
-    app.put("/user/:email", verifyJWT, async (req, res) => {
+    app.put("/user/:email", async (req, res) => {
       const { email } = req.params;
       const user = req.body;
       const filter = { email: email };
