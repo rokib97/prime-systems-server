@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const jwt = require("jsonwebtoken");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const app = express();
 const port = process.env.PORT || 5000;
@@ -16,6 +17,21 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
+// verify JWT
+const verifyJWT = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).send({ message: "UnAuthorized Access" });
+  }
+  const token = authHeader.split(" ")[1];
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+    if (err) {
+      return res.status(403).send({ message: "Forbidden Access" });
+    }
+    req.decoded = decoded;
+    next();
+  });
+};
 async function run() {
   try {
     await client.connect();
@@ -46,6 +62,7 @@ async function run() {
       res.send(parts);
     });
 
+    // get all parts admin api
     app.get("/get-adminparts", async (req, res) => {
       const result = await partsCollection.find({}).toArray();
       res.send(result);
@@ -101,11 +118,16 @@ async function run() {
     });
 
     // get purchase / order api
-    app.get("/get-purchase", async (req, res) => {
+    app.get("/get-purchase", verifyJWT, async (req, res) => {
       const { userEmail } = req.query;
-      const query = { userEmail: userEmail };
-      const orders = await purchaseCollection.find(query).toArray();
-      res.send(orders);
+      const decodedEmail = req.decoded.email;
+      if (userEmail === decodedEmail) {
+        const query = { userEmail: userEmail };
+        const orders = await purchaseCollection.find(query).toArray();
+        return res.send(orders);
+      } else {
+        return res.status(403).send({ message: "Forbidden Access" });
+      }
     });
 
     // get specific purchase by id
@@ -157,8 +179,31 @@ async function run() {
         updateDoc,
         options
       );
-      res.send(result);
+      const token = jwt.sign(
+        { email: email },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: "1d" }
+      );
+      res.send({ result, token });
     });
+
+    // for user Profile update
+    // app.put("/user/:email", async (req, res) => {
+    //   const { email } = req.params;
+    //   const user = req.body;
+    //   const filter = { email: email };
+    //   const options = { upsert: true };
+    //   const updateDoc = {
+    //     $set: user,
+    //   };
+    //   const result = await usersCollection.updateOne(
+    //     filter,
+    //     updateDoc,
+    //     options
+    //   );
+
+    //   res.send(result);
+    // });
 
     //get user by email
     app.get("/user/:email", async (req, res) => {
