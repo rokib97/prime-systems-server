@@ -144,7 +144,7 @@ async function run() {
     });
 
     // get all order purchse for admin api
-    app.get("/get-allpurchase", verifyAdmin, async (req, res) => {
+    app.get("/get-allpurchase", async (req, res) => {
       const result = await purchaseCollection.find({}).toArray();
       res.send(result);
     });
