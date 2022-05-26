@@ -133,7 +133,6 @@ async function run() {
     // get all order purchse for admin api
     app.get("/get-allpurchase", async (req, res) => {
       const result = await purchaseCollection.find({}).toArray();
-      console.log(result);
       res.send(result);
     });
 
@@ -209,24 +208,6 @@ async function run() {
       );
       res.send({ result, token });
     });
-
-    // for user Profile update
-    // app.put("/user/:email", async (req, res) => {
-    //   const { email } = req.params;
-    //   const user = req.body;
-    //   const filter = { email: email };
-    //   const options = { upsert: true };
-    //   const updateDoc = {
-    //     $set: user,
-    //   };
-    //   const result = await usersCollection.updateOne(
-    //     filter,
-    //     updateDoc,
-    //     options
-    //   );
-
-    //   res.send(result);
-    // });
 
     //get user by email
     app.get("/user/:email", verifyJWT, async (req, res) => {
