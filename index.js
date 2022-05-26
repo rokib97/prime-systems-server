@@ -144,7 +144,7 @@ async function run() {
     });
 
     // get all order purchse for admin api
-    app.get("/get-allpurchase", verifyJWT, verifyAdmin, async (req, res) => {
+    app.get("/get-allpurchase", async (req, res) => {
       const result = await purchaseCollection.find({}).toArray();
       res.send(result);
     });
@@ -177,25 +177,20 @@ async function run() {
     });
 
     // update pending status admin api
-    app.patch(
-      "/update-purchase-status/:id",
-      verifyJWT,
-      verifyAdmin,
-      async (req, res) => {
-        const id = req.params.id;
-        const filter = { _id: ObjectId(id) };
-        const updateDoc = {
-          $set: {
-            shipping: true,
-          },
-        };
-        const updatedOrder = await purchaseCollection.updateOne(
-          filter,
-          updateDoc
-        );
-        res.send(updatedOrder);
-      }
-    );
+    app.patch("/update-purchase-status/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          shipping: true,
+        },
+      };
+      const updatedOrder = await purchaseCollection.updateOne(
+        filter,
+        updateDoc
+      );
+      res.send(updatedOrder);
+    });
 
     // delete single purchase api
     app.delete("/delete-purchase/:id", async (req, res) => {
