@@ -201,7 +201,7 @@ async function run() {
       res.send(result);
     });
 
-    // user info api
+    // update user info api
     app.put("/user/:email", async (req, res) => {
       const { email } = req.params;
       const user = req.body;
