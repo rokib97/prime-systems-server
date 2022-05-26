@@ -43,7 +43,7 @@ async function run() {
     const paymentCollection = client.db("PrimeSystems").collection("payments");
     const reviewCollection = client.db("PrimeSystems").collection("review");
 
-    // verify admin
+    // verify admin api
     const verifyAdmin = async (req, res, next) => {
       const requester = req.decoded.email;
       const requesterAccount = await usersCollection.findOne({
