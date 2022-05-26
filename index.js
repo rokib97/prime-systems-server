@@ -232,7 +232,7 @@ async function run() {
     });
 
     // set admin role
-    app.put("/user/admin/:email", verifyJWT, verifyAdmin, async (req, res) => {
+    app.put("/user/admin/:email", verifyAdmin, async (req, res) => {
       const { email } = req.params;
       const filter = { email: email };
       const updateDoc = {
