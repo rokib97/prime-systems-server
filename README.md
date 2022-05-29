@@ -2,7 +2,12 @@
 
 ### Project Description: Prime Systems is a MERN stack website which is Manufacturer based website,In this website We have functionality to purchase different kinad of computer parts which manufactured by Prime Systems. User can buy,cancel,review and pay from their dashboard. Also a admin route in the dashboard is present where admin can add product, can update payment status etc . Email, Password And Social login is also present in his project.
 
-Live Link : [Prime Systems](https://hi-tech-f766c.web.app/).
+## Live Link : [Prime Systems](https://hi-tech-f766c.web.app/).
+
+## Admin access Email Password
+
+Email: admin@access.com
+Password: 123456
 
 ## Basic Project Structure, features and functionality
 
